@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap — Système Vidéo Affiliation</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #07070A;
+  --s1: #0E0E14;
+  --s2: #14141C;
+  --border: rgba(255,255,255,0.06);
+  --text: #F0EFF8;
+  --muted: #52516A;
+  --done: #22C55E;
+  --active: #F59E0B;
+  --next: #60A5FA;
+  --future: #A78BFA;
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Clash Display', sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: 0.4;
+}
+
+.wrap { max-width: 900px; margin: 0 auto; padding: 64px 32px; position: relative; z-index: 1; }
+
+/* Header */
+.header { margin-bottom: 72px; }
+
+.sys-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 10px; letter-spacing: 3px; color: var(--done);
+  border: 1px solid rgba(34,197,94,0.25);
+  padding: 6px 14px; border-radius: 2px;
+  background: rgba(34,197,94,0.06);
+  margin-bottom: 28px;
+  text-transform: uppercase;
+}
+.sys-tag::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--done); border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+h1 {
+  font-family: var(--display);
+  font-size: clamp(32px, 6vw, 60px);
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1.0;
+  margin-bottom: 16px;
+}
+h1 em { font-style: normal; color: var(--active); }
+
+.header-sub {
+  font-size: 13px; color: var(--muted);
+  line-height: 1.7; max-width: 560px;
+}
+
+/* Progress overview */
+.overview {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 64px;
+}
+
+.ov-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 6px; padding: 20px;
+  position: relative; overflow: hidden;
+}
+.ov-card::after {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+}
+.ov-card.done::after { background: var(--done); }
+.ov-card.active::after { background: var(--active); animation: shimmer 2s infinite; }
+.ov-card.next::after { background: var(--next); opacity: 0.4; }
+.ov-card.future::after { background: var(--future); opacity: 0.3; }
+
+@keyframes shimmer {
+  0%,100% { opacity: 1; } 50% { opacity: 0.5; }
+}
+
+.ov-num {
+  font-size: 28px; font-weight: 700;
+  font-family: var(--display);
+  margin-bottom: 4px;
+}
+.ov-card.done .ov-num { color: var(--done); }
+.ov-card.active .ov-num { color: var(--active); }
+.ov-card.next .ov-num { color: var(--next); }
+.ov-card.future .ov-num { color: var(--future); }
+
+.ov-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+.ov-status {
+  font-size: 9px; letter-spacing: 2px;
+  margin-top: 8px; text-transform: uppercase;
+}
+.ov-card.done .ov-status { color: var(--done); }
+.ov-card.active .ov-status { color: var(--active); }
+.ov-card.next .ov-status { color: var(--next); }
+.ov-card.future .ov-status { color: var(--future); }
+
+/* Phase blocks */
+.phase-block { margin-bottom: 48px; }
+
+.phase-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 0; padding: 18px 24px;
+  border-radius: 6px 6px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  position: relative;
+}
+
+.phase-header.done { background: rgba(34,197,94,0.06); border-color: rgba(34,197,94,0.2); }
+.phase-header.active { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.3); }
+.phase-header.next { background: rgba(96,165,250,0.05); border-color: rgba(96,165,250,0.2); }
+.phase-header.future { background: rgba(167,139,250,0.04); border-color: rgba(167,139,250,0.15); }
+
+.phase-icon { font-size: 24px; }
+
+.phase-meta { flex: 1; }
+.phase-tag {
+  font-size: 9px; letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.done .phase-tag { color: var(--done); }
+.active .phase-tag { color: var(--active); }
+.next .phase-tag { color: var(--next); }
+.future .phase-tag { color: var(--future); }
+
+.phase-title {
+  font-family: var(--display);
+  font-size: 20px; font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.phase-time {
+  font-size: 11px; color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 2px;
+}
+
+/* Steps inside phase */
+.phase-body {
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
+}
+
+.phase-header.done + .phase-body { border-color: rgba(34,197,94,0.2); }
+.phase-header.active + .phase-body { border-color: rgba(245,158,11,0.3); }
+.phase-header.next + .phase-body { border-color: rgba(96,165,250,0.2); }
+.phase-header.future + .phase-body { border-color: rgba(167,139,250,0.15); }
+
+.step {
+  display: grid; grid-template-columns: 48px 1fr;
+  border-bottom: 1px solid var(--border);
+}
+.step:last-child { border-bottom: none; }
+
+.step-num {
+  display: flex; align-items: flex-start;
+  justify-content: center;
+  padding-top: 20px;
+  font-size: 11px; color: var(--muted);
+  border-right: 1px solid var(--border);
+}
+
+.step-content { padding: 18px 24px; }
+
+.step-title {
+  font-size: 14px; font-weight: 700;
+  margin-bottom: 6px; display: flex;
+  align-items: center; gap: 8px;
+}
+
+.step-desc {
+  font-size: 12px; color: var(--muted);
+  line-height: 1.7; margin-bottom: 10px;
+}
+
+.step-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-size: 10px; padding: 3px 8px;
+  border-radius: 2px; border: 1px solid var(--border);
+  color: var(--muted);
+}
+.tag.green { border-color: rgba(34,197,94,0.3); color: var(--done); background: rgba(34,197,94,0.06); }
+.tag.yellow { border-color: rgba(245,158,11,0.3); color: var(--active); background: rgba(245,158,11,0.06); }
+.tag.blue { border-color: rgba(96,165,250,0.3); color: var(--next); background: rgba(96,165,250,0.06); }
+.tag.purple { border-color: rgba(167,139,250,0.3); color: var(--future); background: rgba(167,139,250,0.06); }
+
+.step-status {
+  font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; padding: 2px 8px;
+  border-radius: 2px;
+}
+.status-done { background: rgba(34,197,94,0.15); color: var(--done); }
+.status-active { background: rgba(245,158,11,0.15); color: var(--active); }
+.status-todo { background: rgba(96,165,250,0.1); color: var(--next); }
+.status-future { background: rgba(167,139,250,0.08); color: var(--future); }
+
+/* Code snippet */
+.code-snip {
+  background: #000;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 3px; padding: 10px 14px;
+  font-size: 11px; color: #7DD3FC;
+  margin-top: 8px; overflow-x: auto;
+}
+.code-snip .cm { color: var(--muted); font-style: italic; }
+.code-snip .g { color: var(--done); }
+.code-snip .y { color: var(--active); }
+
+/* Prompt box */
+.prompt-box {
+  background: rgba(167,139,250,0.05);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: 3px; padding: 12px 16px;
+  margin-top: 10px;
+  font-size: 11px; color: #C4B5FD;
+  line-height: 1.7;
+}
+.prompt-box::before {
+  content: '💬 PROMPT CODEX → ';
+  color: var(--future); font-weight: 700;
+  font-size: 9px; letter-spacing: 2px;
+  display: block; margin-bottom: 6px;
+}
+
+/* Final output */
+.final-box {
+  background: var(--s1);
+  border: 1px solid rgba(34,197,94,0.2);
+  border-radius: 6px; padding: 32px 36px;
+  margin-top: 48px; text-align: center;
+}
+.final-title {
+  font-family: var(--display);
+  font-size: 28px; font-weight: 700;
+  color: var(--done); margin-bottom: 8px;
+  letter-spacing: -1px;
+}
+.final-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+.flow {
+  display: flex; align-items: center;
+  justify-content: center; flex-wrap: wrap;
+  gap: 8px; font-size: 12px;
+}
+.flow-step {
+  background: var(--s2); border: 1px solid var(--border);
+  padding: 8px 14px; border-radius: 3px;
+}
+.flow-arrow { color: var(--muted); font-size: 16px; }
+.flow-step.highlight {
+  border-color: rgba(34,197,94,0.3);
+  color: var(--done);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .overview { grid-template-columns: repeat(2, 1fr); }
+  h1 { font-size: 28px; }
+  .phase-header { padding: 14px 16px; }
+  .step-content { padding: 14px 16px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="sys-tag">Système autonome v1.0 — En cours</div>
+    <h1>Roadmap complète<br><em>vidéos affiliation</em></h1>
+    <p class="header-sub">
+      De ton lien affilié à 5 vidéos MP4 prêtes à publier — avec voix off, vidéos stock Pixabay, démo app animée et sous-titres dynamiques.
+    </p>
+  </div>
+
+  <!-- Overview -->
+  <div class="overview">
+    <div class="ov-card done">
+      <div class="ov-num">01–03</div>
+      <div class="ov-label">Pipeline de base</div>
+      <div class="ov-status">✅ Terminé</div>
+    </div>
+    <div class="ov-card active">
+      <div class="ov-num">04</div>
+      <div class="ov-label">Voix off ElevenLabs</div>
+      <div class="ov-status">⚡ En cours</div>
+    </div>
+    <div class="ov-card next">
+      <div class="ov-num">05–06</div>
+      <div class="ov-label">Pixabay + Démo 3D</div>
+      <div class="ov-status">→ Prochain</div>
+    </div>
+    <div class="ov-card future">
+      <div class="ov-num">07–08</div>
+      <div class="ov-label">Sous-titres + Interface</div>
+      <div class="ov-status">◦ Planifié</div>
+    </div>
+  </div>
+
+  <!-- PHASE 1-3 DONE -->
+  <div class="phase-block">
+    <div class="phase-header done">
+      <div class="phase-icon">✅</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Phases 01–03 — Terminées</div>
+        <div class="phase-title">Pipeline de base sur VPS</div>
+      </div>
+      <div class="phase-time">Complété</div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">
+            Installation VPS Hostinger (Ubuntu)
+            <span class="step-status status-done">DONE</span>
+          </div>
+          <div class="step-desc">Node.js 20, FFmpeg, npm — tout installé sur le VPS en dehors de la Chine.</div>
+          <div class="step-tags">
+            <span class="tag green">Node 20.20.1</span>
+            <span class="tag green">FFmpeg 6.1.1</span>
+            <span class="tag green">npm 10.8.2</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">
+            Claude API directe — sans blocage
+            <span class="step-status status-done">DONE</span>
+          </div>
+          <div class="step-desc">Claude répond "Bonjour !" depuis le VPS. Plus de 403, plus de VPN nécessaire.</div>
+          <div class="step-tags">
+            <span class="tag green">claude-sonnet-4-6</span>
+            <span class="tag green">@anthropic-ai/sdk</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">
+            Pipeline complet : lien → MP4
+            <span class="step-status status-done">DONE</span>
+          </div>
+          <div class="step-desc">Analyse outil → Brief → Code Remotion → Rendu MP4 (6MB). Testé avec thumbnailcreator.com.</div>
+          <div class="step-tags">
+            <span class="tag green">Remotion render</span>
+            <span class="tag green">MP4 6MB</span>
+            <span class="tag green">120s rendu</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 ACTIVE -->
+  <div class="phase-block">
+    <div class="phase-header active">
+      <div class="phase-icon">⚡</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Phase 04 — En cours</div>
+        <div class="phase-title">Voix off ElevenLabs</div>
+      </div>
+      <div class="phase-time">Aujourd'hui</div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">
+            Corriger la clé ElevenLabs (erreur 401)
+            <span class="step-status status-active">EN COURS</span>
+          </div>
+          <div class="step-desc">La clé ElevenLabs dans .env retourne 401. Vérifier et remplacer par la clé valide depuis elevenlabs.io → Profile → API Key.</div>
+          <div class="code-snip">
+            <span class="cm"># Sur le VPS :</span><br>
+            nano ~/.affiliate-video-system/.env<br>
+            <span class="g">ELEVENLABS_API_KEY=ta_vraie_clé</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">
+            Corriger le Voice ID dans pipeline.js
+            <span class="step-status status-active">EN COURS</span>
+          </div>
+          <div class="step-desc">Codex a mis l'ancien Voice ID. Remplacer par ton Voice ID personnel créé avec Voice Design.</div>
+          <div class="code-snip">
+            <span class="cm">// Voice ID correct :</span><br>
+            <span class="g">const VOICE_ID = "FIba8m5J0VX1qo9cMnRE";</span>
+          </div>
+          <div class="prompt-box">
+            Dans pipeline.js, remplace le voice_id par FIba8m5J0VX1qo9cMnRE partout. Puis copie sur VPS et relance.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">
+            Merge audio + vidéo avec FFmpeg
+            <span class="step-status status-todo">À VALIDER</span>
+          </div>
+          <div class="step-desc">FFmpeg fusionne voiceover.mp3 + video.mp4 → final.mp4 avec voix off synchronisée.</div>
+          <div class="code-snip">
+            ffmpeg -i out/video.mp4 -i voiceover.mp3 \<br>
+            &nbsp;&nbsp;-c:v copy -c:a aac -shortest \<br>
+            &nbsp;&nbsp;<span class="g">out/final.mp4</span>
+          </div>
+          <div class="step-tags">
+            <span class="tag yellow">ElevenLabs API</span>
+            <span class="tag yellow">eleven_multilingual_v2</span>
+            <span class="tag yellow">FFmpeg merge</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase-block">
+    <div class="phase-header next">
+      <div class="phase-icon">🎬</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Phase 05 — Prochain</div>
+        <div class="phase-title">Vidéos stock Pixabay</div>
+      </div>
+      <div class="phase-time">Jour 2</div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">Clé API Pixabay gratuite</div>
+          <div class="step-desc">Créer un compte sur pixabay.com/api/docs → récupérer la clé API gratuite → ajouter dans .env.</div>
+          <div class="step-tags">
+            <span class="tag blue">pixabay.com/api/docs</span>
+            <span class="tag blue">100% gratuit</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">Téléchargement automatique des clips</div>
+          <div class="step-desc">Claude génère les mots-clés pour chaque scène. Le pipeline cherche et télécharge 3 clips Pixabay correspondants automatiquement.</div>
+          <div class="code-snip">
+            <span class="cm">// Scène 1 → "person working computer stressed"</span><br>
+            <span class="cm">// Scène 2 → "content creator editing video"</span><br>
+            GET https://pixabay.com/api/videos/?q=<span class="y">{keyword}</span>&key=<span class="g">{API_KEY}</span>
+          </div>
+          <div class="prompt-box">
+            Ajoute dans pipeline.js une fonction downloadPixabayClips(keywords) qui appelle l'API Pixabay, récupère la meilleure vidéo pour chaque mot-clé et la télécharge dans output/&lt;tool&gt;/assets/.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">Intégration dans Remotion comme background</div>
+          <div class="step-desc">Les clips Pixabay deviennent le fond de chaque scène. Ratio : 40% stock / 60% démo. Textes animés par-dessus avec Remotion.</div>
+          <div class="step-tags">
+            <span class="tag blue">OffthreadVideo Remotion</span>
+            <span class="tag blue">40% stock / 60% démo</span>
+            <span class="tag blue">Overlay textes</span>
+          </div>
+          <div class="code-snip">
+            <span class="cm">// Dans Remotion :</span><br>
+            import {<span class="g">OffthreadVideo</span>} from 'remotion';<br>
+            &lt;OffthreadVideo src={pixabayClip} /&gt;<br>
+            &lt;TextOverlay&gt;{hookText}&lt;/TextOverlay&gt;
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 6 -->
+  <div class="phase-block">
+    <div class="phase-header next">
+      <div class="phase-icon">📱</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Phase 06 — Prochain</div>
+        <div class="phase-title">Démo App animée (Mockup 3D)</div>
+      </div>
+      <div class="phase-time">Jour 2-3</div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">Mockup téléphone 3D en CSS/Remotion</div>
+          <div class="step-desc">Un téléphone en perspective 3D apparaît à l'écran. À l'intérieur : interface de l'outil animée. Effet rotation 3D au départ (rotateY 25° → 0°).</div>
+          <div class="code-snip">
+            transform: <span class="g">rotateY</span>(<span class="y">${interpolate(frame,[540,600],[25,0])}deg</span>)<br>
+            boxShadow: <span class="g">0 30px 80px rgba(0,0,0,0.5)</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">Interface de l'outil générée par Claude</div>
+          <div class="step-desc">Claude analyse l'outil et génère un composant JSX qui ressemble à son interface : header, input, bouton principal, résultat. Animé avec curseur qui clique.</div>
+          <div class="prompt-box">
+            Claude génère un composant AppMockup&lt;ToolName&gt; en JSX qui reproduit l'interface de l'outil avec ses vraies couleurs. Curseur animé qui tape dans un input puis clique le bouton principal. Résultat qui apparaît avec spring().
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">Annotations et highlights</div>
+          <div class="step-desc">Flèches animées + labels qui pointent vers les features clés. Cercle rouge qui pulse sur les éléments importants. Texte "Génère en 1 clic !" qui apparaît avec spring().</div>
+          <div class="step-tags">
+            <span class="tag blue">Annotations SVG</span>
+            <span class="tag blue">Highlight pulse</span>
+            <span class="tag blue">Curseur animé</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 7 -->
+  <div class="phase-block">
+    <div class="phase-header future">
+      <div class="phase-icon">📝</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Phase 07 — Planifié</div>
+        <div class="phase-title">Sous-titres dynamiques</div>
+      </div>
+      <div class="phase-time">Jour 3-4</div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">Génération des timestamps</div>
+          <div class="step-desc">ElevenLabs retourne les timestamps de chaque mot. On les utilise pour synchroniser les sous-titres avec la voix off mot par mot.</div>
+          <div class="step-tags">
+            <span class="tag purple">ElevenLabs timestamps</span>
+            <span class="tag purple">Sync mot par mot</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">Sous-titres style TikTok</div>
+          <div class="step-desc">Mots en gras qui s'affichent un par un, synchronisés avec la voix. Couleur de highlight sur le mot actuel. Style caption TikTok avec fond semi-transparent.</div>
+          <div class="code-snip">
+            <span class="cm">// Mot actuel en couleur de marque :</span><br>
+            currentWord: <span class="g">color={brandColor}</span> fontWeight=700<br>
+            otherWords: <span class="y">color="white"</span> fontWeight=400
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">Mots-clés surlignés automatiquement</div>
+          <div class="step-desc">Claude identifie les mots importants du script. Ces mots apparaissent en plus grand, en couleur ou avec un effet de highlight pendant la voix off.</div>
+          <div class="step-tags">
+            <span class="tag purple">Auto-highlight</span>
+            <span class="tag purple">Scale sur mot-clé</span>
+            <span class="tag purple">Couleur marque</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 8 -->
+  <div class="phase-block">
+    <div class="phase-header future">
+      <div class="phase-icon">🌐</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Phase 08 — Planifié</div>
+        <div class="phase-title">Interface Web + Batch mode</div>
+      </div>
+      <div class="phase-time">Jour 4-5</div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">App web locale (React + Express)</div>
+          <div class="step-desc">Interface dans le navigateur sur localhost:3000. Tu colles ton lien affilié, tu cliques "Lancer", tu vois la progression en temps réel via WebSocket.</div>
+          <div class="step-tags">
+            <span class="tag purple">React + Vite</span>
+            <span class="tag purple">Express API</span>
+            <span class="tag purple">WebSocket live</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">Batch mode — plusieurs liens à la fois</div>
+          <div class="step-desc">Tu colles 7 liens affiliés d'un coup. Le système génère toutes les vidéos en parallèle et te les livre dans un dossier organisé.</div>
+          <div class="code-snip">
+            <span class="cm"># Batch : 7 outils → 35 vidéos automatiquement</span><br>
+            node pipeline.js --batch <span class="g">links.txt</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">Historique + statistiques</div>
+          <div class="step-desc">SQLite pour stocker l'historique des vidéos générées. Coût total API, nombre de vidéos, outils traités. Dashboard simple dans l'interface web.</div>
+          <div class="step-tags">
+            <span class="tag purple">SQLite</span>
+            <span class="tag purple">Dashboard</span>
+            <span class="tag purple">Coût par vidéo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final output -->
+  <div class="final-box">
+    <div class="final-title">🎬 Résultat final</div>
+    <div class="final-sub">Un lien affilié → 10 minutes → vidéo prête à publier</div>
+    <div class="flow">
+      <div class="flow-step">🔗 Lien affilié</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">🧠 Claude analyse</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">✍️ Brief + Script</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">🎬 Pixabay clips</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">⚛️ Remotion code</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">🎙️ Voix ElevenLabs</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">✅ MP4 final</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

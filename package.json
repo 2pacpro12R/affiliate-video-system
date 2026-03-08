@@ -1,0 +1,22 @@
+{
+  "name": "affiliate-video-system",
+  "version": "1.0.0",
+  "description": "Phase 01 pipeline for affiliate video project generation",
+  "main": "pipeline.js",
+  "scripts": {
+    "check-openrouter": "node check-openrouter.js",
+    "pipeline": "node pipeline.js",
+    "start": "node pipeline.js",
+    "test": "node --check pipeline.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.13.6",
+    "dotenv": "^17.3.1",
+    "fs-extra": "^11.3.4",
+    "openai": "^6.27.0"
+  }
+}

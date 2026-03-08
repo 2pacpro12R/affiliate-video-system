@@ -1,0 +1,10 @@
+node_modules/
+.env
+output/*
+!output/.gitkeep
+chrome_dump.txt
+edge_dump.txt
+artifact_mirror.txt
+*.log
+*.mp4
+*.mov
