@@ -4,7 +4,6 @@
   "description": "Phase 01 pipeline for affiliate video project generation",
   "main": "pipeline.js",
   "scripts": {
-    "check-openrouter": "node check-openrouter.js",
     "pipeline": "node pipeline.js",
     "start": "node pipeline.js",
     "test": "node --check pipeline.js"
