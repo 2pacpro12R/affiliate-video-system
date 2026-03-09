@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agents IA — Cours interactif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0a0f;
+      --panel:#12131a;
+      --panel-2:#171925;
+      --text:#eef2ff;
+      --muted:#a8b0c7;
+      --border:rgba(124,111,255,.22);
+      --accent:#7c6fff;
+      --teal:#4ecdc4;
+      --yellow:#ffd93d;
+      --red:#ff6b6b;
+      --shadow:0 18px 50px rgba(0,0,0,.35);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top left, rgba(124,111,255,.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(78,205,196,.10), transparent 24%),
+        linear-gradient(180deg, #090a0f 0%, #0b0d14 100%);
+      color:var(--text);
+      font-family:Inter,system-ui,sans-serif;
+      line-height:1.65;
+    }
+    .wrap{max-width:1280px;margin:0 auto;padding:28px 18px 80px}
+    .hero{
+      position:relative;
+      overflow:hidden;
+      background:linear-gradient(135deg, rgba(124,111,255,.16), rgba(78,205,196,.08));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:30px;
+      padding:30px;
+      box-shadow:var(--shadow);
+      animation:fadeIn .7s ease;
+    }
+    .hero::after{
+      content:"";
+      position:absolute; inset:auto -80px -80px auto;
+      width:260px;height:260px;border-radius:50%;
+      background:radial-gradient(circle, rgba(124,111,255,.22), transparent 65%);
+      pointer-events:none;
+    }
+    .eyebrow{
+      display:inline-flex;gap:10px;align-items:center;
+      font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;
+      color:var(--teal);
+      padding:8px 12px;border-radius:999px;
+      background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.22)
+    }
+    h1,h2,h3,h4{font-family:Syne, Inter, sans-serif;line-height:1.08;margin:0}
+    h1{font-size:clamp(2.1rem,4.8vw,4rem);margin-top:16px}
+    .hero p{max-width:880px;color:#dbe2ff;font-size:1.04rem}
+    .hero-grid{
+      display:grid;grid-template-columns:1.3fr .9fr;gap:18px;margin-top:22px
+    }
+    .stats{
+      display:grid;grid-template-columns:repeat(2,1fr);gap:12px
+    }
+    .stat,.card,.mini,.quiz-card,.cheat{
+      background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+    }
+    .stat{padding:16px}
+    .stat .k{font-family:Syne;font-size:1.5rem}
+    .stat .l{font-size:.86rem;color:var(--muted)}
+    .callout{
+      padding:18px 18px 18px 18px;
+      border-left:4px solid var(--accent)
+    }
+    .tabs{
+      position:sticky;top:0;z-index:10;margin-top:18px;
+      backdrop-filter: blur(10px);
+      background:rgba(10,10,15,.68);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;padding:10px;display:flex;gap:10px;flex-wrap:wrap
+    }
+    .tab-btn{
+      border:none;cursor:pointer;
+      background:#11131c;color:#dce3ff;
+      padding:12px 16px;border-radius:14px;font-weight:700;
+      transition:.25s transform,.25s background,.25s color,.25s box-shadow;
+      border:1px solid transparent;
+    }
+    .tab-btn:hover{transform:translateY(-1px);background:#171925}
+    .tab-btn.active{
+      background:linear-gradient(135deg, rgba(124,111,255,.24), rgba(78,205,196,.12));
+      color:#fff;border-color:rgba(124,111,255,.35);
+      box-shadow:0 8px 24px rgba(124,111,255,.2)
+    }
+    .tab-panel{display:none;animation:fadeIn .45s ease}
+    .tab-panel.active{display:block}
+    .section{padding-top:26px}
+    .section-head{
+      display:flex;align-items:end;justify-content:space-between;gap:16px;margin:0 0 16px
+    }
+    .num{
+      color:var(--accent);font-size:.92rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px
+    }
+    .subtitle{color:var(--muted);max-width:860px;margin-top:8px}
+    .grid-2,.grid-3,.grid-4{
+      display:grid;gap:16px
+    }
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .card{padding:20px}
+    .card h3{font-size:1.18rem;margin-bottom:8px}
+    .card p,.card li{color:#dce3ff}
+    .muted{color:var(--muted)}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 10px;border-radius:999px;font-size:.78rem;font-weight:800;
+      letter-spacing:.03em;margin-bottom:10px
+    }
+    .b-violet{background:rgba(124,111,255,.12);color:#cfc7ff;border:1px solid rgba(124,111,255,.26)}
+    .b-teal{background:rgba(78,205,196,.10);color:#bff5ef;border:1px solid rgba(78,205,196,.25)}
+    .b-yellow{background:rgba(255,217,61,.12);color:#ffe98f;border:1px solid rgba(255,217,61,.28)}
+    .b-red{background:rgba(255,107,107,.10);color:#ffc0c0;border:1px solid rgba(255,107,107,.25)}
+    code, pre{font-family:"JetBrains Mono", monospace}
+    pre{
+      background:#0c0f17;
+      border:1px solid rgba(124,111,255,.18);
+      color:#dbe2ff;
+      padding:16px;border-radius:16px;overflow:auto;font-size:.92rem
+    }
+    .code-accent{color:#cdbdff}
+    .code-teal{color:#7ef0e7}
+    .code-yellow{color:#ffe77a}
+    .code-red{color:#ffa0a0}
+    ul.clean{padding-left:18px;margin:10px 0 0}
+    .highlight{
+      padding:16px;border-radius:18px;margin-top:12px
+    }
+    .hl-v{background:rgba(124,111,255,.10);border:1px solid rgba(124,111,255,.22)}
+    .hl-t{background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.22)}
+    .hl-y{background:rgba(255,217,61,.08);border:1px solid rgba(255,217,61,.22)}
+    .hl-r{background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.22)}
+    .pipeline{
+      display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;margin-top:14px
+    }
+    .step{
+      padding:14px;border-radius:18px;text-align:center;font-weight:800;font-size:.88rem;
+      background:#11131c;border:1px solid rgba(255,255,255,.08)
+    }
+    .step small{display:block;color:var(--muted);font-weight:600;margin-top:6px}
+    .quiz-header{
+      display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px
+    }
+    .score{
+      font-weight:900;font-family:Syne;font-size:1.25rem;color:var(--yellow)
+    }
+    .quiz-card{padding:20px;margin-bottom:14px}
+    .quiz-options{display:grid;gap:10px;margin-top:14px}
+    .quiz-options button{
+      width:100%;text-align:left;padding:14px 14px;border-radius:14px;cursor:pointer;
+      background:#11131c;color:#e7ebff;border:1px solid rgba(255,255,255,.08);
+      font-weight:600;transition:.2s transform,.2s border-color,.2s background
+    }
+    .quiz-options button:hover{transform:translateY(-1px);border-color:rgba(124,111,255,.3)}
+    .quiz-options button.correct{background:rgba(78,205,196,.14);border-color:rgba(78,205,196,.55)}
+    .quiz-options button.wrong{background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.5)}
+    .explain{
+      margin-top:12px;padding:12px 14px;border-radius:14px;color:#dce3ff;background:#0f1320;border:1px solid rgba(255,255,255,.08)
+    }
+    .progress{
+      height:12px;border-radius:999px;background:#11131c;overflow:hidden;border:1px solid rgba(255,255,255,.08)
+    }
+    .bar{
+      height:100%;width:0%;
+      background:linear-gradient(90deg,var(--accent),var(--teal));
+      transition:width .35s ease
+    }
+    .cheat-grid{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px
+    }
+    .cheat{padding:16px}
+    .cheat h4{margin-bottom:8px;font-size:1.02rem}
+    .footer-note{
+      margin-top:22px;padding:16px;border-radius:18px;
+      background:linear-gradient(135deg, rgba(124,111,255,.12), rgba(78,205,196,.08));
+      border:1px solid rgba(255,255,255,.08)
+    }
+    .small{font-size:.92rem}
+    @keyframes fadeIn{
+      from{opacity:0; transform:translateY(8px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+    @media (max-width: 1024px){
+      .hero-grid,.grid-4,.grid-3,.grid-2,.cheat-grid,.pipeline{grid-template-columns:1fr}
+    }
+    @media (max-width: 760px){
+      .wrap{padding:16px 12px 60px}
+      .hero{padding:20px}
+      .tabs{position:static}
+      h1{font-size:2.1rem}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Cours interactif • Architecture des agents IA</div>
+      <h1>Comprendre les agents IA en profondeur</h1>
+      <p>
+        Un <strong>agent IA</strong> n’est pas juste un modèle qui répond à une question.
+        C’est un <strong>système orienté objectif</strong> qui perçoit un contexte, raisonne, choisit des outils,
+        mémorise l’état, agit, observe les résultats, puis corrige sa trajectoire.
+      </p>
+
+      <div class="hero-grid">
+        <div class="callout card">
+          <span class="badge b-violet">Vision centrale</span>
+          <h3>Formule mentale à retenir</h3>
+          <pre><span class="code-accent">Agent IA</span> = <span class="code-yellow">Objectif</span> + <span class="code-teal">Contexte</span> + <span class="code-accent">Raisonnement</span> + <span class="code-yellow">Outils</span> + <span class="code-teal">Mémoire</span> + <span class="code-red">Contrôle</span></pre>
+          <div class="highlight hl-v">
+            Un chatbot “parle”. Un agent “travaille” : il découpe la tâche, exécute des étapes et vérifie ce qu’il a fait.
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <div class="k">1</div>
+            <div class="l">Objectif à atteindre</div>
+          </div>
+          <div class="stat">
+            <div class="k">2</div>
+            <div class="l">Plan d’action</div>
+          </div>
+          <div class="stat">
+            <div class="k">3</div>
+            <div class="l">Appels d’outils</div>
+          </div>
+          <div class="stat">
+            <div class="k">4</div>
+            <div class="l">Boucle d’évaluation</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="Navigation par onglets">
+      <button class="tab-btn active" data-tab="intro">01 • Intro</button>
+      <button class="tab-btn" data-tab="concepts">02 • Concepts</button>
+      <button class="tab-btn" data-tab="architecture">03 • Architecture</button>
+      <button class="tab-btn" data-tab="patterns">04 • Patterns</button>
+      <button class="tab-btn" data-tab="exemples">05 • Exemples</button>
+      <button class="tab-btn" data-tab="quiz">06 • Quiz</button>
+      <button class="tab-btn" data-tab="cheatsheet">07 • Cheatsheet</button>
+    </nav>
+
+    <section id="intro" class="tab-panel active">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <div class="num">01 — Intro</div>
+            <h2>Qu’est-ce qu’un agent IA ?</h2>
+            <div class="subtitle">Définition profonde, différence avec un LLM simple et boucle perception → décision → action.</div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <span class="badge b-violet">Définition</span>
+            <h3>Un système orienté mission</h3>
+            <p>
+              Un agent IA reçoit un <strong>but</strong>, construit un <strong>état interne</strong>,
+              choisit une <strong>stratégie</strong>, exécute des <strong>actions</strong>, puis évalue si l’objectif est atteint.
+            </p>
+          </article>
+
+          <article class="card">
+            <span class="badge b-teal">Différence</span>
+            <h3>LLM ≠ Agent</h3>
+            <p>
+              Le <strong>LLM</strong> est le moteur de compréhension et de génération.
+              L’<strong>agent</strong> est l’assemblage complet : modèle + mémoire + outils + orchestration + garde-fous.
+            </p>
+          </article>
+
+          <article class="card">
+            <span class="badge b-yellow">Idée clé</span>
+            <h3>Un agent boucle</h3>
+            <p>
+              Il ne s’arrête pas forcément à une réponse unique. Il peut <strong>itérer</strong>, corriger,
+              demander un autre outil, ou replanifier selon les résultats obtenus.
+            </p>
+          </article>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <span class="badge b-violet">Boucle cognitive</span>
+          <h3>La séquence canonique d’un agent</h3>
+          <div class="pipeline">
+            <div class="step">Percevoir<small>Entrées, contexte, données</small></div>
+            <div class="step">Comprendre<small>Intention, contraintes</small></div>
+            <div class="step">Planifier<small>Sous-tâches, ordre</small></div>
+            <div class="step">Agir<small>Outils, API, calcul</small></div>
+            <div class="step">Observer<small>Résultats obtenus</small></div>
+            <div class="step">Évaluer<small>Correct ? Complet ?</small></div>
+            <div class="step">Réviser<small>Replanifier ou conclure</small></div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:16px">
+          <article class="card">
+            <span class="badge b-red">Erreur fréquente</span>
+            <h3>“Un agent, c’est juste un gros prompt”</h3>
+            <p>Non. Un prompt seul ne gère ni état robuste, ni permissions, ni mémoire durable, ni exécution de workflows réels.</p>
+            <div class="highlight hl-r small">
+              La vraie différence industrielle se voit dans l’<strong>orchestration</strong>, les <strong>outils</strong>, les <strong>contrôles</strong> et l’<strong>observabilité</strong>.
+            </div>
+          </article>
+
+          <article class="card">
+            <span class="badge b-teal">Analogie</span>
+            <h3>Mini-entreprise logicielle</h3>
+            <p>
+              Le modèle joue l’analyste, la mémoire tient les dossiers, les outils exécutent les tâches,
+              et l’orchestrateur coordonne le tout comme un manager.
+            </p>
+            <pre>LLM        -> raisonne et formule
+Mémoire    -> conserve état et contexte
+Outils     -> agissent sur le monde
+Orchestrateur -> séquence et contrôle</pre>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="concepts" class="tab-panel">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <div class="num">02 — Concepts</div>
+            <h2>Les composants fondamentaux</h2>
+            <div class="subtitle">Tout agent sérieux repose sur des briques bien séparées, chacune ayant un rôle précis.</div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <span class="badge b-violet">Bloc 1</span>
+            <h3>Objectif</h3>
+            <p>Ce que l’agent doit accomplir : répondre, analyser, organiser, comparer, surveiller ou agir sur un système.</p>
+            <ul class="clean">
+              <li>Peut être explicite ou implicite</li>
+              <li>Doit être contraint par un résultat attendu</li>
+              <li>Peut inclure budget, délai, sécurité</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <span class="badge b-teal">Bloc 2</span>
+            <h3>Contexte / Perception</h3>
+            <p>Les entrées qui nourrissent l’agent : texte, documents, API, capteurs, historique, métadonnées, événements.</p>
+            <div class="highlight hl-t small">Le défi n’est pas seulement de lire, mais de transformer ces signaux en un état exploitable.</div>
+          </article>
+
+          <article class="card">
+            <span class="badge b-yellow">Bloc 3</span>
+            <h3>Raisonnement</h3>
+            <p>Décider quoi faire, dans quel ordre, avec quel outil, et comment juger la qualité du résultat intermédiaire.</p>
+          </article>
+
+          <article class="card">
+            <span class="badge b-violet">Bloc 4</span>
+            <h3>Planification</h3>
+            <p>Décomposer une mission complexe en étapes plus petites et cohérentes. Peut être explicite (plan visible) ou implicite.</p>
+          </article>
+
+          <article class="card">
+            <span class="badge b-teal">Bloc 5</span>
+            <h3>Outils</h3>
+            <p>Recherche, SQL, CRM, email, navigateur, code, API métier, OCR, agenda. Sans outils, l’agent reste surtout discursif.</p>
+          </article>
+
+          <article class="card">
+            <span class="badge b-red">Bloc 6</span>
+            <h3>Évaluation</h3>
+            <p>Vérifie cohérence, exhaustivité, conformité, qualité, sécurité, et décide s’il faut réessayer ou conclure.</p>
+          </article>
+        </div>
+
+        <div class="grid-2" style="margin-top:16px">
+          <article class="card">
+            <span class="badge b-yellow">Mémoire</span>
+            <h3>Les 4 formes à connaître</h3>
+            <ul class="clean">
+              <li><strong>Mémoire courte</strong> : contexte de la session en cours</li>
+              <li><strong>Mémoire de travail</strong> : résultats intermédiaires de la tâche</li>
+              <li><strong>Mémoire longue</strong> : préférences et faits persistants</li>
+              <li><strong>Mémoire vectorielle</strong> : récupération sémantique de documents via embeddings</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <span class="badge b-violet">RAG</span>
+            <h3>Retrieval-Augmented Generation</h3>
+            <p>
+              Le modèle n’invente pas à partir de ses seuls paramètres : il récupère d’abord des documents,
+              puis génère une réponse ancrée dans ces sources.
+            </p>
+            <pre>Question -> Recherche documentaire -> Sélection
+-> Injection de contexte -> Génération -> Vérification</pre>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture" class="tab-panel">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <div class="num">03 — Architecture</div>
+            <h2>L’architecture interne d’un agent IA</h2>
+            <div class="subtitle">L’agent est un système distribué de décision. Le LLM n’est qu’une pièce de la machine.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <span class="badge b-violet">Schéma logique</span>
+          <h3>Vue d’ensemble</h3>
+          <pre>
+Utilisateur / événement
+        |
+        v
+Interface d'entrée
+        |
+        v
+Orchestrateur / contrôleur
+   |         |          |
+   v         v          v
+Mémoire   Planif.    Gestion outils
+   \         |          /
+    \        v         /
+      ---- Modèle ----
+            |
+            v
+     Exécution d’actions
+            |
+            v
+   Résultats / Observations
+            |
+            v
+     Évaluation / Contrôle
+            |
+            v
+      Réponse ou itération
+          </pre>
+        </div>
+
+        <div class="grid-3" style="margin-top:16px">
+          <article class="card">
+            <span class="badge b-teal">Orchestrateur</span>
+            <h3>Le vrai chef d’orchestre</h3>
+            <p>
+              Gère les transitions d’état, décide quand appeler le LLM, quel outil utiliser,
+              combien d’itérations autoriser, et quand arrêter la boucle.
+            </p>
+          </article>
+          <article class="card">
+            <span class="badge b-yellow">État</span>
+            <h3>State management</h3>
+            <p>
+              Un agent robuste doit stocker un état structuré : objectif, plan courant, résultats, erreurs,
+              permissions, traces et validations humaines éventuelles.
+            </p>
+          </article>
+          <article class="card">
+            <span class="badge b-red">Contrôle</span>
+            <h3>Guardrails</h3>
+            <p>
+              Permissions, validation humaine, limites de coût, domaines autorisés, schémas de sortie,
+              règles métier, filtrage et audit.
+            </p>
+          </article>
+        </div>
+
+        <div class="grid-2" style="margin-top:16px">
+          <article class="card">
+            <span class="badge b-violet">Niveau 1</span>
+            <h3>Architecture cognitive</h3>
+            <p>Comment l’agent “pense” :</p>
+            <ul class="clean">
+              <li>interprétation de l’objectif</li>
+              <li>décomposition</li>
+              <li>sélection d’outil</li>
+              <li>auto-vérification</li>
+            </ul>
+          </article>
+          <article class="card">
+            <span class="badge b-teal">Niveau 2</span>
+            <h3>Architecture système</h3>
+            <p>Comment l’agent tourne réellement :</p>
+            <ul class="clean">
+              <li>API, bases, files de messages</li>
+              <li>mémoires et caches</li>
+              <li>workers d’exécution</li>
+              <li>monitoring et logs</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="grid-2" style="margin-top:16px">
+          <article class="card">
+            <span class="badge b-yellow">Niveau 3</span>
+            <h3>Architecture de gouvernance</h3>
+            <p>Qui contrôle quoi, avec quelle traçabilité, quelle validation, quel audit et quelle conformité.</p>
+            <div class="highlight hl-y small">
+              En entreprise, les agents utiles sont rarement ceux qui “raisonnent le plus”.
+              Ce sont ceux qui <strong>raisonnent assez</strong> tout en restant <strong>contrôlables</strong>.
+            </div>
+          </article>
+          <article class="card">
+            <span class="badge b-red">Trade-off clé</span>
+            <h3>Autonomie vs contrôle</h3>
+            <p>Plus l’agent est autonome, plus il peut être productif — mais aussi coûteux ou risqué si mal encadré.</p>
+            <pre>Autonomie ↑  => initiative ↑, vitesse ↑, risque ↑
+Contrôle ↑   => sécurité ↑, audit ↑, friction ↑</pre>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="patterns" class="tab-panel">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <div class="num">04 — Patterns</div>
+            <h2>Les architectures et patterns modernes</h2>
+            <div class="subtitle">Tous les agents ne se ressemblent pas. Voici les principaux designs à connaître.</div>
+          </div>
+        </div>
+
+        <div class="grid-4">
+          <article class="card">
+            <span class="badge b-violet">Pattern A</span>
+            <h3>Réactif</h3>
+            <p>Une demande courte, peu d’étapes, décision quasi immédiate. Idéal pour des tâches simples et rapides.</p>
+          </article>
+          <article class="card">
+            <span class="badge b-teal">Pattern B</span>
+            <h3>Plan-and-Execute</h3>
+            <p>Le système génère un plan global, puis exécute chaque étape. Plus stable pour les tâches longues.</p>
+          </article>
+          <article class="card">
+            <span class="badge b-yellow">Pattern C</span>
+            <h3>Tool-Using Agent</h3>
+            <p>Le modèle sélectionne des outils selon les besoins : web, SQL, email, navigateur, calcul, code, API.</p>
+          </article>
+          <article class="card">
+            <span class="badge b-red">Pattern D</span>
+            <h3>Multi-agent</h3>
+            <p>Plusieurs agents spécialisés collaborent : chercheur, planificateur, rédacteur, critique, exécuteur.</p>
+          </article>
+        </div>
+
+        <div class="grid-2" style="margin-top:16px">
+          <article class="card">
+            <span class="badge b-violet">ReAct</span>
+            <h3>Reason + Act</h3>
+            <p>
+              Le système alterne <strong>raisonnement</strong> et <strong>action</strong>.
+              Il pense, agit, observe, puis pense à nouveau.
+            </p>
+            <pre>Pensée -> Action outil -> Observation -> Nouvelle pensée -> Conclusion</pre>
+          </article>
+
+          <article class="card">
+            <span class="badge b-teal">State Machine</span>
+            <h3>Machine à états</h3>
+            <p>
+              Très utilisée en production. Chaque étape est explicite :
+              <em>intake, retrieval, validation, execution, review, finalization</em>.
+            </p>
+            <div class="highlight hl-t small">
+              C’est souvent le meilleur choix pour la robustesse métier, car chaque transition est contrôlable.
+            </div>
+          </article>
+        </div>
+
+        <div class="grid-2" style="margin-top:16px">
+          <article class="card">
+            <span class="badge b-yellow">Mono-agent</span>
+            <h3>Simple, moins cher, plus maintenable</h3>
+            <p>Convient à la majorité des cas d’usage réels tant que le domaine est bien cadré.</p>
+          </article>
+          <article class="card">
+            <span class="badge b-red">Multi-agent</span>
+            <h3>Puissant, mais souvent sur-vendu</h3>
+            <p>
+              Intéressant si les rôles sont réellement spécialisés. Sinon, on ajoute surtout de la latence,
+              du coût et de la complexité de coordination.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="exemples" class="tab-panel">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <div class="num">05 — Exemples</div>
+            <h2>Cas concrets d’architecture d’agents</h2>
+            <div class="subtitle">Voir un agent comme un pipeline vivant permet de mieux comprendre sa valeur réelle.</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <article class="card">
+            <span class="badge b-violet">Exemple 1</span>
+            <h3>Agent RH de présélection</h3>
+            <p class="muted">Mission : lire CV + fiche de poste + règles RH, puis produire un résumé argumenté.</p>
+            <ul class="clean">
+              <li>Extraction de compétences, expériences, signaux clés</li>
+              <li>Matching avec critères obligatoires / souhaitables</li>
+              <li>RAG sur politiques RH internes</li>
+              <li>Scoring, justification, demande de validation humaine</li>
+            </ul>
+            <pre>Entrées -> Parsing -> Matching -> Vérification politiques
+-> Score -> Résumé -> Validation humaine</pre>
+          </article>
+
+          <article class="card">
+            <span class="badge b-teal">Exemple 2</span>
+            <h3>Agent support client</h3>
+            <p class="muted">Mission : comprendre un ticket, retrouver la solution, répondre ou escalader.</p>
+            <ul class="clean">
+              <li>Classification du problème</li>
+              <li>Recherche de KB via RAG</li>
+              <li>Suggestion d’action et réponse contextualisée</li>
+              <li>Escalade si risque, ambiguïté ou action sensible</li>
+            </ul>
+            <pre>Ticket -> Intent -> Retrieval -> Réponse / Escalade -> Journalisation</pre>
+          </article>
+        </div>
+
+        <div class="grid-2" style="margin-top:16px">
+          <article class="card">
+            <span class="badge b-yellow">Exemple 3</span>
+            <h3>Agent finance / contrôle</h3>
+            <p>Détecte des anomalies dans des factures ou transactions en croisant historiques, règles et seuils d’alerte.</p>
+            <div class="highlight hl-y small">
+              Ici, l’architecture doit être plus déterministe : règles + scoring + justification + validation humaine.
+            </div>
+          </article>
+
+          <article class="card">
+            <span class="badge b-red">Exemple 4</span>
+            <h3>Agent personnel de planification</h3>
+            <p>Coordonne agenda, email, préférences et contraintes pour préparer un déplacement ou une journée de travail.</p>
+            <div class="highlight hl-r small">
+              Très utile, mais très sensible : besoin fort de permissions, sandboxing et revue avant actions externes.
+            </div>
+          </article>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <span class="badge b-violet">Pseudo-code mental</span>
+          <h3>À quoi ressemble la boucle d’un agent ?</h3>
+          <pre>
+state = load_context()
+goal = parse_user_request()
+
+while not done:
+    plan = update_plan(goal, state)
+    action = choose_best_action(plan, state)
+    result = execute(action)
+    state = integrate(result, state)
+    verdict = evaluate(goal, state)
+
+    if verdict == "complete":
+        done = True
+    elif verdict == "unsafe":
+        request_human_review()
+        break
+    else:
+        continue
+
+return final_response(state)
+          </pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz" class="tab-panel">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <div class="num">06 — Quiz</div>
+            <h2>Vérifie ta compréhension</h2>
+            <div class="subtitle">Quiz interactif avec scoring en temps réel. Clique une seule réponse par question.</div>
+          </div>
+        </div>
+
+        <div class="quiz-header">
+          <div class="score">Score : <span id="score">0</span> / <span id="total">5</span></div>
+          <div style="min-width:240px;flex:1;max-width:460px">
+            <div class="progress"><div class="bar" id="bar"></div></div>
+          </div>
+        </div>
+
+        <div id="quiz-container"></div>
+
+        <div class="footer-note">
+          <strong>Lecture du score :</strong>
+          0–2 = bases à revoir • 3–4 = bonne compréhension • 5/5 = tu maîtrises déjà la logique d’architecture.
+        </div>
+      </div>
+    </section>
+
+    <section id="cheatsheet" class="tab-panel">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <div class="num">07 — Cheatsheet</div>
+            <h2>Cheatsheet des termes clés</h2>
+            <div class="subtitle">Résumé compact pour révision rapide.</div>
+          </div>
+        </div>
+
+        <div class="cheat-grid">
+          <div class="cheat"><h4>Agent IA</h4><div class="small">Système autonome ou semi-autonome orienté objectif, capable de raisonner, agir et s’ajuster.</div></div>
+          <div class="cheat"><h4>LLM</h4><div class="small">Grand modèle de langage utilisé pour comprendre, générer, résumer et guider les décisions.</div></div>
+          <div class="cheat"><h4>Orchestrateur</h4><div class="small">Composant qui coordonne étapes, outils, état, budget et règles d’arrêt.</div></div>
+          <div class="cheat"><h4>Planification</h4><div class="small">Décomposition d’un objectif en sous-tâches ordonnées.</div></div>
+          <div class="cheat"><h4>Tool Use</h4><div class="small">Capacité de l’agent à appeler des outils externes : API, SQL, navigateur, email, code.</div></div>
+          <div class="cheat"><h4>State</h4><div class="small">État courant de la tâche : objectif, plan, résultats, erreurs, validations.</div></div>
+          <div class="cheat"><h4>Mémoire courte</h4><div class="small">Contexte temporaire de la session courante.</div></div>
+          <div class="cheat"><h4>Mémoire longue</h4><div class="small">Préférences et informations persistantes réutilisables entre sessions.</div></div>
+          <div class="cheat"><h4>Mémoire vectorielle</h4><div class="small">Index sémantique pour retrouver des documents proches d’une requête.</div></div>
+          <div class="cheat"><h4>RAG</h4><div class="small">Génération augmentée par récupération de documents pertinents.</div></div>
+          <div class="cheat"><h4>Guardrails</h4><div class="small">Garde-fous : permissions, validation humaine, filtres, schémas, limites d’itération.</div></div>
+          <div class="cheat"><h4>ReAct</h4><div class="small">Pattern alternant raisonnement et actions outillées.</div></div>
+          <div class="cheat"><h4>State Machine</h4><div class="small">Architecture à états explicites, robuste pour la production.</div></div>
+          <div class="cheat"><h4>Mono-agent</h4><div class="small">Un seul agent central gère le flux principal.</div></div>
+          <div class="cheat"><h4>Multi-agent</h4><div class="small">Plusieurs agents spécialisés collaborent sur une même mission.</div></div>
+          <div class="cheat"><h4>Human-in-the-loop</h4><div class="small">Validation humaine insérée avant ou après une action sensible.</div></div>
+        </div>
+
+        <div class="footer-note">
+          <strong>Résumé final :</strong>
+          un agent IA n’est pas seulement un “modèle intelligent”, mais une <strong>architecture complète de décision et d’action</strong>.
+          En production, la qualité d’un agent dépend autant de son <strong>orchestration</strong> et de ses <strong>contrôles</strong> que de la qualité du modèle.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.tab;
+        tabs.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(target).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+    const quizData = [
+      {
+        q: "Quel énoncé décrit le mieux un agent IA ?",
+        options: [
+          "Un simple modèle qui répond une fois à une question",
+          "Un système orienté objectif qui peut raisonner, agir et évaluer",
+          "Une base de données avec interface conversationnelle",
+          "Un moteur de recherche sans mémoire"
+        ],
+        answer: 1,
+        explain: "Un agent IA est un système complet : objectif, état, raisonnement, outils, mémoire et boucle d’évaluation."
+      },
+      {
+        q: "Quel composant coordonne les étapes, outils et règles d’arrêt ?",
+        options: ["La police d’écriture", "L’orchestrateur", "L’embedding", "Le parseur HTML"],
+        answer: 1,
+        explain: "L’orchestrateur pilote le flux global : quand raisonner, quand agir, quand s’arrêter."
+      },
+      {
+        q: "À quoi sert principalement le RAG ?",
+        options: [
+          "À compresser les poids du modèle",
+          "À générer des animations CSS",
+          "À récupérer des documents pertinents avant génération",
+          "À remplacer toute mémoire"
+        ],
+        answer: 2,
+        explain: "Le RAG ancre la réponse dans des sources récupérées dynamiquement, ce qui améliore fraîcheur et factualité."
+      },
+      {
+        q: "Pourquoi ajoute-t-on des guardrails ?",
+        options: [
+          "Pour rendre l’agent plus décoratif",
+          "Pour limiter risques, erreurs et actions non autorisées",
+          "Pour accélérer les polices web",
+          "Pour supprimer le besoin de validation humaine"
+        ],
+        answer: 1,
+        explain: "Les guardrails servent à contrôler permissions, conformité, coûts, sécurité et robustesse."
+      },
+      {
+        q: "Quel pattern est souvent le plus robuste pour des workflows métier critiques ?",
+        options: [
+          "Architecture à états explicites",
+          "Prompt unique sans outils",
+          "Aucune mémoire",
+          "Navigation purement aléatoire"
+        ],
+        answer: 0,
+        explain: "Les machines à états sont plus prévisibles, auditables et adaptées aux environnements de production."
+      }
+    ];
+
+    const container = document.getElementById('quiz-container');
+    const scoreEl = document.getElementById('score');
+    const totalEl = document.getElementById('total');
+    const barEl = document.getElementById('bar');
+    totalEl.textContent = quizData.length;
+
+    let score = 0;
+    let answered = 0;
+
+    function renderQuiz() {
+      container.innerHTML = '';
+      quizData.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'quiz-card';
+        card.innerHTML = `
+          <div class="badge b-violet">Question ${idx + 1}</div>
+          <h3>${item.q}</h3>
+          <div class="quiz-options"></div>
+          <div class="explain" style="display:none"></div>
+        `;
+
+        const optionsWrap = card.querySelector('.quiz-options');
+        const explainEl = card.querySelector('.explain');
+
+        item.options.forEach((opt, optIdx) => {
+          const btn = document.createElement('button');
+          btn.textContent = opt;
+          btn.addEventListener('click', () => {
+            if (card.dataset.answered === 'true') return;
+            card.dataset.answered = 'true';
+            answered++;
+
+            [...optionsWrap.children].forEach((b, i) => {
+              b.disabled = true;
+              if (i === item.answer) b.classList.add('correct');
+            });
+
+            if (optIdx === item.answer) {
+              btn.classList.add('correct');
+              score++;
+            } else {
+              btn.classList.add('wrong');
+            }
+
+            explainEl.style.display = 'block';
+            explainEl.innerHTML = `<strong>Explication :</strong> ${item.explain}`;
+            scoreEl.textContent = score;
+            barEl.style.width = `${(answered / quizData.length) * 100}%`;
+          });
+          optionsWrap.appendChild(btn);
+        });
+
+        container.appendChild(card);
+      });
+    }
+    renderQuiz();
+  </script>
+</body>
+</html>
